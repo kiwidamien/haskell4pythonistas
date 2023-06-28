@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>Perfect Numbers</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+        <meta name="description" content="Straight foward Number-Theory problem that shows how to use Haskell sum types." />
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">Haskell 4 Pythonistas</a></h1>
+                <nav><ul>
+                    <li class="active"><a href="/category/exercise.html">Exercise</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/perfect-numbers.html" rel="bookmark"
+           title="Permalink to Perfect Numbers">Perfect Numbers</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2023-06-28T00:00:00-07:00">
+                Published: Wed 28 June 2023
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/damien-martin.html">Damien Martin</a>
+        </address>
+<p>In <a href="/category/exercise.html">Exercise</a>.</p>
+
+</footer><!-- /.post-info -->      <pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span><span class="w">
+</span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span><span class="w">
+
+
+</span><span class="k">class</span> <span class="nc">Classify</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span><span class="w">
+</span>    <span class="n">DEFICIENT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span><span class="w">
+</span>    <span class="n">ABUNDENT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span><span class="w">
+</span>    <span class="n">PERFECT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span><span class="w">
+
+
+</span><span class="k">def</span> <span class="nf">factors</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span><span class="w">
+</span>    <span class="k">return</span> <span class="nb">set</span><span class="p">([</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="n">f</span> <span class="o">==</span> <span class="mi">0</span><span class="p">])</span><span class="w">
+
+
+</span><span class="k">def</span> <span class="nf">classify</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Classify</span><span class="p">:</span><span class="w">
+</span>    <span class="n">sum_proper_factors</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">factors</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="o">-</span> <span class="n">n</span><span class="w">
+</span>    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">sum_proper_factors</span><span class="p">:</span><span class="w">
+</span>        <span class="k">return</span> <span class="n">Classify</span><span class="o">.</span><span class="n">PERFECT</span><span class="w">
+</span>    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">sum_proper_factors</span><span class="p">:</span><span class="w">
+</span>        <span class="k">return</span> <span class="n">Classify</span><span class="o">.</span><span class="n">DEFICIENT</span><span class="w">
+</span>    <span class="k">return</span> <span class="n">Classify</span><span class="o">.</span><span class="n">ABUNDENT</span>
+</pre>
+<pre class="code haskell literal-block">
+<span class="kr">module</span><span class="w"> </span><span class="nn">PerfectNumbers</span><span class="w"> </span><span class="p">(</span><span class="nf">classify</span><span class="p">,</span><span class="w"> </span><span class="kt">Classification</span><span class="p">(</span><span class="o">..</span><span class="p">))</span><span class="w"> </span><span class="kr">where</span><span class="w">
+
+</span><span class="kr">data</span><span class="w"> </span><span class="kt">Classification</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Deficient</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">Perfect</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">Abundant</span><span class="w"> </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="p">,</span><span class="w"> </span><span class="kt">Show</span><span class="p">)</span><span class="w">
+
+</span><span class="nf">factors</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w">
+</span><span class="nf">factors</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">f</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">f</span><span class="ow">&lt;-</span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">],</span><span class="w"> </span><span class="n">mod</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="w">
+
+</span><span class="nf">classify</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Classification</span><span class="w">
+</span><span class="nf">classify</span><span class="w"> </span><span class="n">n</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">sumOfFactors</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">Perfect</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">sumOfFactors</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">Deficient</span><span class="w">
+    </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">Abundant</span><span class="w">
+    </span><span class="kr">where</span><span class="w"> </span><span class="n">sumOfFactors</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">factors</span><span class="w"> </span><span class="n">n</span>
+</pre>
+
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="https://getpelican.com/">Pelican</a></li>
+                            <li><a href="https://www.python.org/">Python.org</a></li>
+                            <li><a href="https://palletsprojects.com/p/jinja/">Jinja2</a></li>
+                            <li><a href="#">You can modify those links in your config file</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="#">You can add links in your config file</a></li>
+                            <li><a href="#">Another social link</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="https://getpelican.com/">Pelican</a>, which takes great advantage of <a href="https://www.python.org/">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="https://www.smashingmagazine.com/2009/08/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>
