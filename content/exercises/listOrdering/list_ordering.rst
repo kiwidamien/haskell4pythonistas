@@ -50,10 +50,72 @@ Haskell Versions
 
 Here is my first Haskell version of the program, translated pretty directly from the Python version:
 
+Direct translation
+******************
 .. include:: list_ordering1.hs
    :code: haskell
 
+I don't really like that ``listStartsWith`` _and_ ``isSublist`` both have the "empty list" checks.
 
+They are needed on ``isSublist`` because otherwise we run into an issue with the ``tail y`` part in the recursion.
+We keep stripping off the head of the "containing" list, but eventually we reach the tail, and then if we did not guard
+against ``isSublist _ []`` in the pattern above, we would have an error.
 
+The *pattern* is not strictly necessary, we could have other checks like is one
+
+.. code:: haskell
+
+   -- replacing isSublist
+   isSublist :: (Eq a) => [a] -> [a] -> Bool
+   isSublist x y = (listStartsWith x y) || ( ((length x) >= (length y)) && (isSublist x (tail y)) )
+
+which reduces the number of line, but it still feels like we are repeating some of the logic.
+
+Next version
+************
+
+While I wish I could claim I thought of this, someone else had an amazing solution. In ``Data.List`` there is a function ``tails`` that 
+gives a list containing the subsequent tails of your list. 
+
+.. code:: haskell
+
+   -- tails is in Data.List, tails:: [a] -> [[a]]
+   tails [1, 2, 3]
+   -- returns [[1, 2, 3], [2, 3], [3], []]
+
+We will show how to implement ``tails`` ourselves, but if we just imported it, how would we use it?
+
+All the function ``isSublist`` does is see if the list is equal to the first N elements of at least one of the ``tails`` of the other list.
+So we can use Haskell's equivalent of Python's ``in``, called ``elem``, to see if we have a match in the list, after cutting to the first N elements.
+
+.. code:: haskell
+
+   import Data.List (tails)
+
+   isSublist:: (Eq a) => [a] -> [a] -> Bool
+   isSublist x y = x `elem` (tails y)
+
+Now this simplifies the rest of the program, and we don't even need ``listStartsWith`` anymore. Our entire program is
+
+.. include:: list_ordering2.hs
+   :code: haskell
+
+We could even eliminate ``isSublist`` as a function, and replace our code with
+
+.. include:: list_ordering3.hs
+   :code: haskell
+
+Did we just cheat by importing?
+*******************************
+
+In any language, we can import a package that has someone else doing the hard work for us. How difficult would it be for us to implement ``tails`` on our own?
+
+Surprisingly easy! Here is an implementation:
+
+.. code:: haskell
+
+   ourTails :: [a] -> [[a]]
+   ourTails [] = [[]]
+   ourTails xs = xs : (ourTails $ tail xs)  -- or you might perfer ourTails x:xs = x : (ourTails xs) 
 
 
