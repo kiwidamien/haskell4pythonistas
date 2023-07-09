@@ -13,12 +13,402 @@
                 <h1><a href="/">Haskell 4 Pythonistas</a></h1>
                 <nav><ul>
                     <li class="active"><a href="/category/exercise.html">Exercise</a></li>
+                    <li><a href="/category/exercises.html">Exercises</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/partial-ordering-on-lists.html">Partial Ordering on Lists</a></h1>
+                    <h1 class="entry-title"><a href="/converting-dna-to-rna.html">Converting DNA to RNA</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2023-07-08T13:00:00-07:00">
+                Published: Sat 08 July 2023
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/damien-martin.html">Damien Martin</a>
+        </address>
+<p>In <a href="/category/exercise.html">Exercise</a>.</p>
+
+</footer><!-- /.post-info --><p>This problem is pretty simple: Given a string representing DNA nucleotides A, C, G, and T convert into the matching RNA. The conversion table is</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="48%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">DNA</th>
+<th class="head">RNA</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>A</td>
+<td>U</td>
+</tr>
+<tr><td>C</td>
+<td>G</td>
+</tr>
+<tr><td>G</td>
+<td>C</td>
+</tr>
+<tr><td>T</td>
+<td>A</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="python-versions">
+<h2>Python Versions</h2>
+<p>In Python, we are going to opt for returning an error flag (instead of raising an exception) when there is an
+invalid value. This is to create parity with the Haskell approach. So what we want is something like</p>
+<pre class="code python literal-block">
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dna</span><span class="o">.</span><span class="n">to_rna</span><span class="p">(</span><span class="s2">&quot;GATTACA&quot;</span><span class="p">)</span><span class="w">
+</span><span class="p">(</span><span class="s2">&quot;CUAAUGA&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># legal DNA string</span><span class="w">
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">dna</span><span class="o">.</span><span class="n">to_rna</span><span class="p">(</span><span class="s2">&quot;CATXCAT&quot;</span><span class="p">)</span><span class="w">
+</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>       <span class="c1"># return the first illegal character and tell us the result is invalid</span>
+</pre>
+<p>The overall approach is pretty simple:</p>
+<ul class="simple">
+<li>Use a dictionary to map from DNA to RNA, or return a letter with an error flag if it isn't one of A, C, G, or T.</li>
+<li>Join the list of transformed letters back as the &quot;translated&quot; string.</li>
+</ul>
+<p>In code</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span><span class="w">
+
+
+</span><span class="k">def</span> <span class="nf">to_rna</span><span class="p">(</span><span class="n">dna</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span><span class="w">
+</span>    <span class="n">translation</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;G&quot;</span><span class="p">:</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="s2">&quot;U&quot;</span><span class="p">}</span><span class="w">
+</span>    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span><span class="w">
+</span>    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">dna</span><span class="p">:</span><span class="w">
+</span>        <span class="k">if</span> <span class="n">char</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">translation</span><span class="p">:</span><span class="w">
+</span>            <span class="k">return</span> <span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="w">
+</span>        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">translation</span><span class="p">[</span><span class="n">char</span><span class="p">])</span><span class="w">
+</span>    <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+</pre>
+<p>This function doesn't look particularly elegant, but it does the job. The problem is a list comprehension <em>almost</em> works here, except when we
+have an illegal letter. We could still do something like</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span><span class="w">
+
+
+</span><span class="k">def</span> <span class="nf">to_rna</span><span class="p">(</span><span class="n">dna</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span><span class="w">
+</span>    <span class="n">translation</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;G&quot;</span><span class="p">:</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="s2">&quot;U&quot;</span><span class="p">}</span><span class="w">
+</span>    <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">translation</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;err:</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dna</span><span class="p">]</span><span class="w">
+</span>    <span class="n">errors</span> <span class="o">=</span> <span class="p">[</span><span class="n">err</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span> <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;err:&quot;</span><span class="p">)]</span><span class="w">
+</span>    <span class="k">if</span> <span class="n">errors</span><span class="p">:</span><span class="w">
+</span>        <span class="k">return</span> <span class="p">(</span><span class="n">errors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">:],</span> <span class="kc">False</span><span class="p">)</span><span class="w">
+</span>    <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+</pre>
+<p>This looks more functional, but has some disadvantages:</p>
+<ul>
+<li><p class="first">We have to do the entire conversion, we don't get to exit early on an error.</p>
+<p>If we had a string the was a few million characters long, and the fifth one is an &quot;X&quot;, we still need to process all the characters</p>
+</li>
+<li><p class="first">We are less flexible to changing requirements:</p>
+<p>A list comprehension is great, readable, and elegant when the requirements are simple. We can add another requirement (e.g. error checking) and we can work around it. But if there was additional logic (e.g. raise an error if you have a run of more than 10 of the same input consecutively) it becomes harder and harder to work with the comprehension.</p>
+</li>
+</ul>
+<p>The loop isn't that much less readable, but it is a little uglier, but allows us to both exit early and is more flexible to changing requirements. I am not so worried about the lack of early exit (&quot;Premature optimization is the root of all evil&quot;, after all!) as we should have nicer code to start and change if profiling tells us that it is an issue. The main advantage to me is the flexibility, although you might think YAGNI (You Ain't Gonna Need It) and stick with the first.</p>
+<p>Regardless, we can quickly find two ways of coding this problem up in Python.</p>
+</div>
+<div class="section" id="haskell-versions">
+<h2>Haskell Versions</h2>
+<p>For the haskell version, let's start with the <tt class="docutils literal">Maybe</tt> type and work our way to getting errors with <tt class="docutils literal">Either</tt>. We start wanting</p>
+<pre class="code haskell literal-block">
+<span class="nf">toRNA</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span>
+</pre>
+<p>Following the python approach, it is pretty straightforward to use a <tt class="docutils literal">Map</tt> to turn a String into a list of <tt class="docutils literal">Maybe Char</tt></p>
+<pre class="code haskell literal-block">
+<span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Map</span><span class="w">
+
+</span><span class="nf">processString</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Char</span><span class="p">]</span><span class="w">
+</span><span class="nf">processString</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">x</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Map</span><span class="o">.</span><span class="n">lookup</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">translation</span><span class="p">)</span><span class="w"> </span><span class="n">s</span><span class="w">
+    </span><span class="kr">where</span><span class="w"> </span><span class="n">translation</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Map</span><span class="o">.</span><span class="n">fromList</span><span class="w"> </span><span class="p">[(</span><span class="sc">'A'</span><span class="p">,</span><span class="w"> </span><span class="sc">'U'</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="sc">'C'</span><span class="p">,</span><span class="w"> </span><span class="sc">'G'</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="sc">'G'</span><span class="p">,</span><span class="w"> </span><span class="sc">'C'</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="sc">'T'</span><span class="p">,</span><span class="w"> </span><span class="sc">'A'</span><span class="p">)]</span>
+</pre>
+<p>Here the <tt class="docutils literal">Map.lookup x translation</tt> returns either <tt class="docutils literal">Just Char</tt> if <tt class="docutils literal">x</tt> was a valid key, or <tt class="docutils literal">Nothing</tt> otherwise.</p>
+<p>In Haskell, a list <tt class="docutils literal">[Char]</tt> is a string, so there is no need for a conversion. Unfortunately, we have a list <tt class="docutils literal">[Maybe Char]</tt> that we want to convert to a <tt class="docutils literal">Maybe String</tt>. How do we do that?</p>
+<p>Let's start with a function <tt class="docutils literal">pureAppendChar</tt> defined as follows:</p>
+<pre class="code haskell literal-block">
+<span class="nf">pureAppendChar</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">pureAppendChar</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+</pre>
+<p>What I'd like to be able to do is have a version of this that works with <tt class="docutils literal">Maybe</tt>. Let's write one explicitly, although this seems like the sort of work we would get fancy Monad stuff to do:</p>
+<pre class="code haskell literal-block">
+<span class="nf">appendChar</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">appendChar</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">Nothing</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span><span class="w">
+</span><span class="nf">appendChar</span><span class="w"> </span><span class="kt">Nothing</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span><span class="w">
+</span><span class="nf">appendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="n">str</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+</pre>
+<p>This is redundant as we are providing the logic of our pure function <tt class="docutils literal">pureAppendChar</tt> but so it can only be used with <tt class="docutils literal">Maybe</tt>. Let's see how we can use this, and then come back and improve the code later.</p>
+<p>Once we have <tt class="docutils literal">appendChar</tt> the rest is somewhat easy. We want to take our list of <tt class="docutils literal">Maybe Char</tt> and append them one at a time to our string.
+This is basically a reduction:</p>
+<pre class="code haskell literal-block">
+<span class="nf">reduceList</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Char</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="kt">[]</span><span class="p">)</span><span class="w">
+    </span><span class="kr">where</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">s</span><span class="w">
+          </span><span class="n">go</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="kt">:</span><span class="n">cs</span><span class="p">)</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="p">(</span><span class="n">appendChar</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+</pre>
+<p>Reductions in Haskell are done with <tt class="docutils literal">foldl</tt> or <tt class="docutils literal">foldr</tt>, and we can rewrite this as a reduction. Here we are applying the list from the left, so we will use <tt class="docutils literal">foldl</tt> (or, better, <tt class="docutils literal">foldl'</tt>). I always have trouble remembering the signature for <tt class="docutils literal">foldl</tt>, which is <tt class="docutils literal">(b <span class="pre">-&gt;</span> a <span class="pre">-&gt;</span> b) <span class="pre">-&gt;</span> b <span class="pre">-&gt;</span> t a <span class="pre">-&gt;</span> b</tt>. Specialized to the current case:</p>
+<pre class="code haskell literal-block">
+<span class="c1">-- :i foldl is (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b</span><span class="w">
+</span><span class="c1">-- We have a = Maybe Char, b = Maybe String, t = List</span><span class="w">
+</span><span class="c1">-- So we need (Maybe String -&gt; Maybe Char -&gt; Maybe String) -&gt; Maybe String -&gt; [Maybe Char] -&gt; Maybe String</span><span class="w">
+</span><span class="c1">-- or         (           reduction step                 ) -&gt; (ini String) -&gt; (input to iterate over) -&gt; output</span><span class="w">
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Char</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldl</span><span class="w"> </span><span class="n">appendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">cs</span>
+</pre>
+<p>The comment explaining <tt class="docutils literal">foldl</tt> is way longer than the actual function. I won't include that comment, as I imagine that <tt class="docutils literal">foldl</tt> will become something more familiar to me as I do more Haskell problems.</p>
+<p>We can put this altogether into our first solution</p>
+<pre class="code haskell literal-block">
+<span class="kr">module</span><span class="w"> </span><span class="nn">DNA</span><span class="w"> </span><span class="p">(</span><span class="nf">toRNA</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span><span class="w">
+
+</span><span class="kr">import</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="p">(</span><span class="kt">Map</span><span class="p">)</span><span class="w">
+</span><span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Map</span><span class="w">
+
+</span><span class="nf">appendChar</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">appendChar</span><span class="w"> </span><span class="kt">Nothing</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span><span class="w">
+</span><span class="nf">appendChar</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">Nothing</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span><span class="w">
+</span><span class="nf">appendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="p">])</span><span class="w">
+
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Char</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldl</span><span class="w"> </span><span class="n">appendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">cs</span><span class="w">
+
+</span><span class="nf">toRNA</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">toRNA</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reduceList</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">x</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Map</span><span class="o">.</span><span class="n">lookup</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">translation</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span><span class="w">
+    </span><span class="kr">where</span><span class="w"> </span><span class="n">translation</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Map</span><span class="o">.</span><span class="n">fromList</span><span class="w"> </span><span class="p">[(</span><span class="sc">'A'</span><span class="p">,</span><span class="sc">'U'</span><span class="p">),(</span><span class="sc">'C'</span><span class="p">,</span><span class="sc">'G'</span><span class="p">),(</span><span class="sc">'G'</span><span class="p">,</span><span class="sc">'A'</span><span class="p">),(</span><span class="sc">'T'</span><span class="p">,</span><span class="sc">'A'</span><span class="p">)]</span>
+</pre>
+<div class="section" id="first-improvement-make-appendchar-better">
+<h3>First improvement: make <tt class="docutils literal">appendChar</tt> better</h3>
+<p>Let's say that we have our <tt class="docutils literal">pureAppendChar</tt> function from earlier</p>
+<pre class="code haskell literal-block">
+<span class="nf">pureAppendChar</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">ch</span><span class="p">]</span>
+</pre>
+<p>This contains the &quot;essential logic&quot; of <tt class="docutils literal">appendChar</tt>. How do we get it to play nicely with the <tt class="docutils literal">Maybe</tt> context? In the type language, we want to transform <tt class="docutils literal">workOnMaybe</tt> that has the following signature:</p>
+<pre class="code haskell literal-block">
+<span class="nf">workOnMaybe</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+</pre>
+<p>i.e. an operator that can take pure functions that take an <tt class="docutils literal">a</tt> (for us, String) and <tt class="docutils literal">b</tt> (for us Char) to return a <tt class="docutils literal">c</tt> (for us, also String) and make the function work in the <tt class="docutils literal">Maybe</tt> context.</p>
+<p>If we had functions <tt class="docutils literal">a <span class="pre">-&gt;</span> b</tt>, the answer would be <tt class="docutils literal">fmap</tt>:</p>
+<pre class="code haskell literal-block">
+<span class="c1">-- Specialized to maybe, works on any functor</span><span class="w">
+</span><span class="nf">fmap</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+</pre>
+<p>Abusing language a little, we can say <tt class="docutils literal">fmap</tt> only transforms functions with one argument, and we need to work with <tt class="docutils literal">pureAppendChar</tt> which takes two arguments. The reason this is lazy is in Haskell, all functions technically take one argument.</p>
+<p>One approach is to try using partial function application to get us something that <tt class="docutils literal">fmap</tt> can work on. Let's think of <tt class="docutils literal">pureAppendChar</tt> as</p>
+<pre class="code haskell literal-block">
+<span class="c1">-- usual thought: &quot;apply a string and char to get a string&quot;</span><span class="w">
+</span><span class="nf">pureAppendChar</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="c1">-- instead, we can insert parens to show how we are thinging about it</span><span class="w">
+</span><span class="nf">pureAppendChar</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span>
+</pre>
+<p>This is something that <tt class="docutils literal">fmap</tt> can work with! We might think that we can just partially apply our way out of trouble. Unfortunately this is not the case:</p>
+<pre class="code haskell literal-block">
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">p1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fmap</span><span class="w"> </span><span class="n">pureAppendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">-- this works</span><span class="w">
+</span><span class="c1">-- okay, now p1 should take Maybe Char and return Maybe String</span><span class="w">
+</span><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">p1</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="sc">'!'</span><span class="p">)</span><span class="w">
+</span><span class="c1">-- error1</span><span class="w">
+</span><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="kt">:</span><span class="n">info</span><span class="w"> </span><span class="n">p1</span><span class="w">
+</span><span class="nf">p1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">(</span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w">
+</span><span class="c1">-- we need Maybe Char -&gt; Maybe String</span>
+</pre>
+<p>Looking back at the previous block where mentally supplied brackets, it is no real surprise (in retrospect) this happened. Our entire function is contained in a Maybe, the Maybe doesn't &quot;distribute&quot; across its arguments.</p>
+<p>There is another operator, <tt class="docutils literal">&lt;*&gt;</tt>, called &quot;app&quot; that does distribute arguments.</p>
+<pre class="code haskell literal-block">
+<span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Applicative</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">b</span>
+</pre>
+<p>Since <tt class="docutils literal">Maybe</tt> is an applicative, we have <tt class="docutils literal">&lt;*&gt;</tt> which <em>does</em> distribute the Maybe across the arguments. Going back to our example:</p>
+<pre class="code haskell literal-block">
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">p1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fmap</span><span class="w"> </span><span class="n">pureAppendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi&quot;</span><span class="p">)</span><span class="w">
+</span><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="kt">:</span><span class="n">info</span><span class="w"> </span><span class="n">p1</span><span class="w">
+</span><span class="kt">Maybe</span><span class="w"> </span><span class="p">(</span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w">
+</span><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">p2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span><span class="w"> </span><span class="n">p1</span><span class="w">
+</span><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="kt">:</span><span class="n">info</span><span class="w"> </span><span class="n">p2</span><span class="w">
+</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">p2</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="sc">'!'</span><span class="p">)</span><span class="w">
+</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi!&quot;</span>
+</pre>
+<p>If we want to recover our <tt class="docutils literal">appendChar :: Maybe String <span class="pre">-&gt;</span> Maybe Char <span class="pre">-&gt;</span> Maybe String</tt> we can do the following</p>
+<pre class="code haskell literal-block">
+<span class="c1">-- the old way</span><span class="w">
+</span><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">appendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="sc">'!'</span><span class="p">)</span><span class="w">
+</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi!&quot;</span><span class="w">
+</span><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">fmap</span><span class="w"> </span><span class="n">pureAppendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="sc">'!'</span><span class="p">)</span><span class="w">
+</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi!&quot;</span><span class="w">
+
+</span><span class="c1">-- we have an infix version too</span><span class="w">
+</span><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">fmap</span><span class="w"> </span><span class="n">pureAppendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi&quot;</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="sc">'!'</span><span class="p">)</span><span class="w">
+</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi!&quot;</span><span class="w">
+
+</span><span class="c1">-- fmap also has an infix version, &lt;$&gt;</span><span class="w">
+</span><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">pureAppendChar</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi&quot;</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="sc">'!'</span><span class="p">)</span><span class="w">
+</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi!&quot;</span><span class="w">
+
+</span><span class="c1">-- these operations are associative, so we can remove parens</span><span class="w">
+</span><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pureAppendChar</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="sc">'!'</span><span class="p">)</span><span class="w">
+</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;hi!&quot;</span><span class="w">
+
+</span><span class="c1">-- we can actually rewrite appendChar this way</span><span class="w">
+</span><span class="nf">appendChar</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">pureAppendChar</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">c</span>
+</pre>
+<p>In a practical sense (not a purist &quot;haskell functions only have one argument&quot; sense) it is useful to think of <tt class="docutils literal">fmap</tt> or <tt class="docutils literal">&lt;$&gt;</tt> getting our function application <em>into</em> the context, and <tt class="docutils literal">&lt;*&gt;</tt> allowing us to stay there.</p>
+<p>This gives us our second solution</p>
+<pre class="code haskell literal-block">
+<span class="kr">module</span><span class="w"> </span><span class="nn">DNA</span><span class="w"> </span><span class="p">(</span><span class="nf">toRNA</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span><span class="w">
+
+</span><span class="kr">import</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="p">(</span><span class="kt">Map</span><span class="p">)</span><span class="w">
+</span><span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Map</span><span class="w">
+
+</span><span class="nf">pureAppendChar</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">pureAppendChar</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="w">
+
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Char</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldl</span><span class="w"> </span><span class="n">appendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">cs</span><span class="w">
+    </span><span class="kr">where</span><span class="w"> </span><span class="n">appendChar</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">pureAppendChar</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">c</span><span class="w">
+
+</span><span class="nf">toRNA</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">toRNA</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reduceList</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">x</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Map</span><span class="o">.</span><span class="n">lookup</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">translation</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span><span class="w">
+    </span><span class="kr">where</span><span class="w"> </span><span class="n">translation</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Map</span><span class="o">.</span><span class="n">fromList</span><span class="w"> </span><span class="p">[(</span><span class="sc">'A'</span><span class="p">,</span><span class="sc">'U'</span><span class="p">),(</span><span class="sc">'C'</span><span class="p">,</span><span class="sc">'G'</span><span class="p">),(</span><span class="sc">'G'</span><span class="p">,</span><span class="sc">'C'</span><span class="p">),(</span><span class="sc">'T'</span><span class="p">,</span><span class="sc">'A'</span><span class="p">)]</span>
+</pre>
+</div>
+<div class="section" id="third-version-moving-to-either">
+<h3>Third version: moving to Either</h3>
+<p>To match the Python solution, we need to do better than return <tt class="docutils literal">Nothing</tt> when we input an invalid string. We need to be told the first invalid character. We will do this using the <tt class="docutils literal">Either</tt> monad (which is therefore also a functor and an applicative).</p>
+<p>We will take the standard convention that the left value is the error, and the right is the value. Let's break off the translation into it's own step</p>
+<pre class="code haskell literal-block">
+<span class="nf">translate</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Either</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="kt">Char</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'A'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'U'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'C'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'G'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'G'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'C'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'T'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'A'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Left</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;Cannot translate &quot;</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+</pre>
+<p>We now need to be able to reduce <tt class="docutils literal">[Either String Char] <span class="pre">-&gt;</span> [Either String String]</tt>. <tt class="docutils literal">Either</tt> already has <tt class="docutils literal">fmap</tt> defined on it:</p>
+<pre class="code haskell literal-block">
+<span class="kr">instance</span><span class="w"> </span><span class="kt">Functor</span><span class="w"> </span><span class="p">(</span><span class="kt">Either</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span><span class="w">
+    </span><span class="n">fmap</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="kt">Right</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w">  </span><span class="c1">-- i.e. right values &quot;commute&quot;</span><span class="w">
+    </span><span class="n">fmap</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="kt">Left</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Left</span><span class="w"> </span><span class="n">x</span><span class="w">  </span><span class="c1">-- i.e. Left or error values short circuit</span>
+</pre>
+<p>Keeping our same <tt class="docutils literal">pureAppendChar</tt> we can keep <tt class="docutils literal">reduceList</tt> almost completely the same. The things that change are the type signature, and the initial value of the string we are building (going from <tt class="docutils literal">Just &quot;&quot;</tt> to <tt class="docutils literal">Right &quot;&quot;</tt>)! The entire program is now</p>
+<pre class="code haskell literal-block">
+<span class="kr">module</span><span class="w"> </span><span class="nn">DNA</span><span class="w"> </span><span class="p">(</span><span class="nf">toRNA</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span><span class="w">
+
+</span><span class="kr">import</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="p">(</span><span class="kt">Map</span><span class="p">)</span><span class="w">
+</span><span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Map</span><span class="w">
+
+</span><span class="nf">pureAppendChar</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">pureAppendChar</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="w">
+
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Either</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="kt">Char</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Either</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldl</span><span class="w"> </span><span class="n">appendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Right</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">cs</span><span class="w">
+    </span><span class="kr">where</span><span class="w"> </span><span class="n">appendChar</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">pureAppendChar</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">c</span><span class="w">
+
+</span><span class="nf">translate</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Either</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="kt">Char</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'A'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'U'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'C'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'G'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'G'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'C'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'T'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'A'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Left</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;Cannot translate &quot;</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="p">])</span><span class="w">
+
+</span><span class="nf">toRNA</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Either</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">toRNA</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reduceList</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">translate</span><span class="w"> </span><span class="n">xs</span>
+</pre>
+</div>
+<div class="section" id="fourth-version-errmsg-type-alias">
+<h3>Fourth version: ErrMsg type alias</h3>
+<p>This is a pretty short refactor, but when looking at <tt class="docutils literal">Either String String</tt> in particular, it can be hard to read what the intent it. The general format we have is <tt class="docutils literal">Either String A</tt>, where the left <tt class="docutils literal">String</tt> contains an error message, and <tt class="docutils literal">A</tt> contains the data.</p>
+<p>Let's make a type alias to make this a little clearer</p>
+<pre class="code haskell literal-block">
+<span class="kr">module</span><span class="w"> </span><span class="nn">DNA</span><span class="w"> </span><span class="p">(</span><span class="nf">toRNA</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span><span class="w">
+
+</span><span class="kr">import</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="p">(</span><span class="kt">Map</span><span class="p">)</span><span class="w">
+</span><span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Map</span><span class="w">
+
+</span><span class="kr">type</span><span class="w"> </span><span class="kt">ErrMsg</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">String</span><span class="w">
+
+</span><span class="nf">pureAppendChar</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">pureAppendChar</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="w">
+
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Either</span><span class="w"> </span><span class="kt">ErrMsg</span><span class="w"> </span><span class="kt">Char</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Either</span><span class="w"> </span><span class="kt">ErrMsg</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldl</span><span class="w"> </span><span class="n">appendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Right</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">cs</span><span class="w">
+    </span><span class="kr">where</span><span class="w"> </span><span class="n">appendChar</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">pureAppendChar</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">c</span><span class="w">
+
+</span><span class="nf">translate</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Either</span><span class="w"> </span><span class="kt">ErrMsg</span><span class="w"> </span><span class="kt">Char</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'A'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'U'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'C'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'G'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'G'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'C'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="sc">'T'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'A'</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Left</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;Cannot translate &quot;</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="p">])</span><span class="w">
+
+</span><span class="nf">toRNA</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Either</span><span class="w"> </span><span class="kt">ErrMsg</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">toRNA</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reduceList</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">translate</span><span class="w"> </span><span class="n">xs</span>
+</pre>
+</div>
+<div class="section" id="fifth-version-bringing-back-the-dictionary">
+<h3>Fifth version: Bringing back the dictionary</h3>
+<p>The translate function is taking a lot of space, and is still acting like a Python Dictionary / Haskell Map. Let's restore the Haskell Map! I place it outside the function, so I am not recreating the Map on every lookup.</p>
+<p>Here we use <tt class="docutils literal">findWithDefault</tt>, which is similar to the Python <tt class="docutils literal">get</tt> method</p>
+<pre class="code haskell literal-block">
+<span class="kr">module</span><span class="w"> </span><span class="nn">DNA</span><span class="w"> </span><span class="p">(</span><span class="nf">toRNA</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span><span class="w">
+
+</span><span class="kr">import</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="p">(</span><span class="kt">Map</span><span class="p">)</span><span class="w">
+</span><span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Map</span><span class="w">
+
+</span><span class="kr">type</span><span class="w"> </span><span class="kt">ErrMsg</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">String</span><span class="w">
+
+</span><span class="nf">pureAppendChar</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">pureAppendChar</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="w">
+
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Either</span><span class="w"> </span><span class="kt">ErrMsg</span><span class="w"> </span><span class="kt">Char</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Either</span><span class="w"> </span><span class="kt">ErrMsg</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">reduceList</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldl</span><span class="w"> </span><span class="n">appendChar</span><span class="w"> </span><span class="p">(</span><span class="kt">Right</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">cs</span><span class="w">
+    </span><span class="kr">where</span><span class="w"> </span><span class="n">appendChar</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">pureAppendChar</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">c</span><span class="w">
+
+</span><span class="nf">charLookup</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Map</span><span class="o">.</span><span class="n">fromList</span><span class="w"> </span><span class="p">[(</span><span class="sc">'A'</span><span class="p">,</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'U'</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="sc">'C'</span><span class="p">,</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'G'</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="sc">'G'</span><span class="p">,</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'C'</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="sc">'T'</span><span class="p">,</span><span class="w"> </span><span class="kt">Right</span><span class="w"> </span><span class="sc">'A'</span><span class="p">)]</span><span class="w">
+
+</span><span class="nf">translate</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Either</span><span class="w"> </span><span class="kt">ErrMsg</span><span class="w"> </span><span class="kt">Char</span><span class="w">
+</span><span class="nf">translate</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Map</span><span class="o">.</span><span class="n">findWithDefault</span><span class="w"> </span><span class="p">(</span><span class="kt">Left</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;Cannot translate &quot;</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="p">]))</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="n">charLookup</span><span class="w">
+
+</span><span class="nf">toRNA</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Either</span><span class="w"> </span><span class="kt">ErrMsg</span><span class="w"> </span><span class="kt">String</span><span class="w">
+</span><span class="nf">toRNA</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reduceList</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">translate</span><span class="w"> </span><span class="n">xs</span>
+</pre>
+</div>
+</div>
+<div class="section" id="summary">
+<h2>Summary</h2>
+<p>Implmenting this in Python was pretty straightforward. It took me a little longer to write this in Haskell, because working with dictionaries / maps is a little tricker.</p>
+<p>In Python:</p>
+<ul class="simple">
+<li>You have to make sure that the key you are trying to access exists, or you will get a <tt class="docutils literal">KeyError</tt></li>
+<li>or you can use <tt class="docutils literal">get</tt> to get a default value.</li>
+</ul>
+<p>You can easily check that the value you want is there before access, so you are left with &quot;plain old values&quot; to manipulate.</p>
+<p>In Haskell:</p>
+<ul class="simple">
+<li>When you access a key, you will get a <tt class="docutils literal">Maybe</tt> result (even if you are SURE the key is in there, because you just checked).</li>
+<li>You can use <tt class="docutils literal">findWithDefault</tt>, similar to <tt class="docutils literal">get</tt>.</li>
+</ul>
+<p>In my Haskell code, the hard part was trying to figure out how to work with the contexts. We approached this by</p>
+<ol class="arabic simple">
+<li>Started with just <tt class="docutils literal">Maybe</tt> (what we get from the Map <tt class="docutils literal">lookup</tt> method) and writing a specialized append function for <tt class="docutils literal">Maybe Char</tt> and <tt class="docutils literal">Matybe String</tt></li>
+<li>Used functor <tt class="docutils literal">&lt;$&gt;</tt> and applicative <tt class="docutils literal">&lt;*&gt;</tt> to generate a specialized append function from the pure function.</li>
+<li>Moved from <tt class="docutils literal">Maybe</tt> to <tt class="docutils literal">Either</tt>, so we could carry error information. We saw the &quot;typeclass&quot;-ness of <tt class="docutils literal">&lt;$&gt;</tt> and <tt class="docutils literal">&lt;*&gt;</tt> meant that we didn't have to change the code that used these pieces; the contexts (<tt class="docutils literal">Maybe</tt> and <tt class="docutils literal">Either</tt>) applied the correct semantics for these operations.</li>
+<li>Made a type class for <tt class="docutils literal">ErrMsg</tt> to make the intent of the <tt class="docutils literal">Either</tt> types easier to reason about.</li>
+<li>Moved back to a dictionary with defaults, instead of a 5 line function, for translation.</li>
+</ol>
+</div>
+                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/partial-ordering-on-lists.html" rel="bookmark"
+                           title="Permalink to Partial Ordering on Lists">Partial Ordering on Lists</a></h1>
+                </header>
+
+                <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2023-06-29T17:00:00-07:00">
                 Published: Thu 29 June 2023
@@ -29,114 +419,11 @@
         </address>
 <p>In <a href="/category/exercise.html">Exercise</a>.</p>
 
-</footer><!-- /.post-info --><p>Let's look at a (partial) ordering of lists, where we want to say one <tt class="docutils literal">list1</tt> is less than or equal to <tt class="docutils literal">list2</tt> if <tt class="docutils literal">list1</tt> is a sublist of <tt class="docutils literal">list2</tt>. Unlike subsets, the order matters! If <tt class="docutils literal">list1</tt> is less than or equal to <tt class="docutils literal">list2</tt>, we can also say <tt class="docutils literal">list2</tt> is greater than or equal to <tt class="docutils literal">list1</tt>.</p>
-<p>It is also possible that two lists cannot be compared, such as <tt class="docutils literal">[1,3]</tt> and <tt class="docutils literal">[6, 8, 9]</tt>. In this case, neither list is a sublist of the other, so we will not define an ordering. This is what makes our list comparison a _partial_ ordering -- we are not committing to being able to order any two arbitary lists.</p>
-<p>We would like to make a function that takes two lists, <tt class="docutils literal">list1</tt> and <tt class="docutils literal">list2</tt> and returns</p>
-<ul class="simple">
-<li><tt class="docutils literal">Ordering.LT</tt> (less than) if <tt class="docutils literal">list1</tt> is a sublist of <tt class="docutils literal">list2</tt>, and not equal.</li>
-<li><tt class="docutils literal">Ordering.EQ</tt> (equals) if <tt class="docutils literal">list1 == list2</tt></li>
-<li><tt class="docutils literal">Ordering.GT</tt> (greater than) if <tt class="docutils literal">list2</tt> is a sublist of <tt class="docutils literal">list1</tt>, and not equal.</li>
-<li><tt class="docutils literal">Ordering.NONE</tt> if there is no comparison between <tt class="docutils literal">list1</tt> and <tt class="docutils literal">list2</tt>.</li>
-</ul>
-<div class="section" id="examples">
-<h2>Examples</h2>
-<ul class="simple">
-<li><tt class="docutils literal">[2, 4, 6]</tt> is <tt class="docutils literal">Ordering.LT</tt> <tt class="docutils literal">[0, 2, 4, 6, 8, 10]</tt></li>
-<li><tt class="docutils literal">[]</tt> is <tt class="docutils literal">Ordering.LT</tt> <tt class="docutils literal">[8, 13, 8]</tt></li>
-<li><tt class="docutils literal">['California', 'Oregon', 'Washington', 'Arizona']</tt> is <tt class="docutils literal">Ordering.GT</tt> <tt class="docutils literal">['Oregon', 'Washington']</tt></li>
-<li><tt class="docutils literal">['Oregon', 'Washington']</tt> is <tt class="docutils literal">Ordering.LT</tt> <tt class="docutils literal">['California', 'Oregon', 'Washington', 'Arizona']</tt></li>
-<li><tt class="docutils literal">['Oregon', 'Washington']</tt> is <tt class="docutils literal">Ordering.NONE</tt> <tt class="docutils literal">['Washington', 'Oregon']</tt></li>
-</ul>
-<p>It is a lot like comparison between sets, except that order (and repetitions) matter.</p>
-</div>
-<div class="section" id="python-version">
-<h2>Python Version</h2>
-<p>We know how to check if two lists are equal to each other. What remains is to check if one list is a sublist of the other (we can use this to get both less than and greater than, just by swapping the order of the lists).</p>
-<pre class="code python literal-block">
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span><span class="w">
-</span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="w">
+</footer><!-- /.post-info -->                <p class="first last">Implementating a partial ordering on lists.</p>
 
-
-</span><span class="k">class</span> <span class="nc">Ordering</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span><span class="w">
-</span>    <span class="n">LT</span> <span class="o">=</span> <span class="s2">&quot;LT&quot;</span><span class="w">
-</span>    <span class="n">GT</span> <span class="o">=</span> <span class="s2">&quot;GT&quot;</span><span class="w">
-</span>    <span class="n">EQ</span> <span class="o">=</span> <span class="s2">&quot;EQ&quot;</span><span class="w">
-</span>    <span class="n">NONE</span> <span class="o">=</span> <span class="s2">&quot;NONE&quot;</span><span class="w">
-
-
-</span><span class="k">def</span> <span class="nf">list_starts_with</span><span class="p">(</span><span class="n">starting_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">containing_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span><span class="w">
-</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">starting_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">containing_list</span><span class="p">):</span><span class="w">
-</span>        <span class="k">return</span> <span class="kc">False</span><span class="w">
-</span>    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">starting_list</span><span class="p">,</span> <span class="n">containing_list</span><span class="p">):</span><span class="w">
-</span>        <span class="k">if</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">b</span><span class="p">:</span><span class="w">
-</span>            <span class="k">return</span> <span class="kc">False</span><span class="w">
-</span>    <span class="k">return</span> <span class="kc">True</span><span class="w">
-
-
-</span><span class="k">def</span> <span class="nf">is_sublist</span><span class="p">(</span><span class="n">candidate_sublist</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">containing_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span><span class="w">
-    </span><span class="sd">&quot;&quot;&quot;Returns True if x == y[i:j] for some i and j&quot;&quot;&quot;</span><span class="w">
-</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_sublist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">containing_list</span><span class="p">):</span><span class="w">
-</span>        <span class="k">return</span> <span class="kc">False</span><span class="w">
-</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_sublist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span><span class="w">
-</span>        <span class="k">return</span> <span class="kc">True</span><span class="w">
-</span>    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">containing_list</span><span class="p">):</span><span class="w">
-</span>        <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="n">candidate_sublist</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="w">
-</span>            <span class="k">if</span> <span class="n">list_starts_with</span><span class="p">(</span><span class="n">candidate_sublist</span><span class="p">,</span> <span class="n">containing_list</span><span class="p">[</span><span class="n">index</span><span class="p">:]):</span><span class="w">
-</span>                <span class="k">return</span> <span class="kc">True</span><span class="w">
-</span>    <span class="k">return</span> <span class="kc">False</span><span class="w">
-
-
-</span><span class="k">def</span> <span class="nf">compare_lists</span><span class="p">(</span><span class="n">list_one</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">list_two</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span><span class="w">
-</span>    <span class="k">if</span> <span class="n">list_one</span> <span class="o">==</span> <span class="n">list_two</span><span class="p">:</span><span class="w">
-</span>        <span class="k">return</span> <span class="n">Ordering</span><span class="o">.</span><span class="n">EQ</span><span class="w">
-</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_one</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_two</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_sublist</span><span class="p">(</span><span class="n">list_one</span><span class="p">,</span> <span class="n">list_two</span><span class="p">):</span><span class="w">
-</span>        <span class="k">return</span> <span class="n">Ordering</span><span class="o">.</span><span class="n">LT</span><span class="w">
-</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_one</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_two</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_sublist</span><span class="p">(</span><span class="n">list_two</span><span class="p">,</span> <span class="n">list_one</span><span class="p">):</span><span class="w">
-</span>        <span class="k">return</span> <span class="n">Ordering</span><span class="o">.</span><span class="n">GT</span><span class="w">
-</span>    <span class="k">return</span> <span class="n">Ordering</span><span class="o">.</span><span class="n">NONE</span>
-</pre>
-<p>The logic here is pretty straightforward. If we use <tt class="docutils literal">list_starts_with</tt> we can trace through the list, checking each of the locations where candidate list's first element matches a containing list element.</p>
-<p>Technically, this check isn't required -- it would be caught by the element-wise check in <tt class="docutils literal">list_starts_with</tt> -- but it seems wasteful to call this function on every element if it just fails on the first step.</p>
-</div>
-<div class="section" id="haskell-versions">
-<h2>Haskell Versions</h2>
-<p>Here is my first Haskell version of the program, translated pretty directly from the Python version:</p>
-<pre class="code haskell literal-block">
-<span class="kr">module</span><span class="w"> </span><span class="nn">Sublist</span><span class="w"> </span><span class="p">(</span><span class="nf">sublist</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span><span class="w">
-
-</span><span class="cm">{-
- - This is the code more or less &quot;translated&quot; from the Python
- - version
- -}</span><span class="w">
-
-</span><span class="nf">listStartsWith</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="w">
-</span><span class="nf">listStartsWith</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span><span class="w">
-</span><span class="nf">listStartsWith</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">False</span><span class="w">
-</span><span class="nf">listStartsWith</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span><span class="w">
-  </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">False</span><span class="w">
-  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">listStartsWith</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w">
-
-
-</span><span class="nf">isSublist</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="w">
-</span><span class="nf">isSublist</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span><span class="w">
-</span><span class="nf">isSublist</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">False</span><span class="w">
-</span><span class="nf">isSublist</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">listStartsWith</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w">  </span><span class="p">(</span><span class="n">isSublist</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">tail</span><span class="w"> </span><span class="n">y</span><span class="p">))</span><span class="w">
-
-
-</span><span class="nf">sublist</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Ordering</span><span class="w">
-</span><span class="nf">sublist</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w">
-  </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">EQ</span><span class="w">
-  </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">isSublist</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">LT</span><span class="w">
-  </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">isSublist</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">GT</span><span class="w">
-  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
-</pre>
-</div>
-                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+                <a class="readmore" href="/partial-ordering-on-lists.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
