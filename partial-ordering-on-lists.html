@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>Partial Ordering on Lists</title>
+        <link rel="stylesheet" href="https://github.io/kiwidamien/haskell4pythonistas/theme/css/main.css" />
+        <link href="https://github.io/kiwidamien/haskell4pythonistas/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Haskell 4 Pythonistas Atom Feed" />
+        <meta name="description" content="Implementating a partial ordering on lists." />
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="https://github.io/kiwidamien/haskell4pythonistas/">Haskell 4 Pythonistas</a></h1>
+                <nav><ul>
+                    <li class="active"><a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercise.html">Exercise</a></li>
+                    <li><a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercises.html">Exercises</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="https://github.io/kiwidamien/haskell4pythonistas/partial-ordering-on-lists.html" rel="bookmark"
+           title="Permalink to Partial Ordering on Lists">Partial Ordering on Lists</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2023-06-29T17:00:00-07:00">
+                Published: Thu 29 June 2023
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="https://github.io/kiwidamien/haskell4pythonistas/author/damien-martin.html">Damien Martin</a>
+        </address>
+<p>In <a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercise.html">Exercise</a>.</p>
+
+</footer><!-- /.post-info -->      <p>Let's look at a (partial) ordering of lists, where we want to say one <tt class="docutils literal">list1</tt> is less than or equal to <tt class="docutils literal">list2</tt> if <tt class="docutils literal">list1</tt> is a sublist of <tt class="docutils literal">list2</tt>. Unlike subsets, the order matters! If <tt class="docutils literal">list1</tt> is less than or equal to <tt class="docutils literal">list2</tt>, we can also say <tt class="docutils literal">list2</tt> is greater than or equal to <tt class="docutils literal">list1</tt>.</p>
+<p>It is also possible that two lists cannot be compared, such as <tt class="docutils literal">[1,3]</tt> and <tt class="docutils literal">[6, 8, 9]</tt>. In this case, neither list is a sublist of the other, so we will not define an ordering. This is what makes our list comparison a _partial_ ordering -- we are not committing to being able to order any two arbitary lists.</p>
+<p>We would like to make a function that takes two lists, <tt class="docutils literal">list1</tt> and <tt class="docutils literal">list2</tt> and returns</p>
+<ul class="simple">
+<li><tt class="docutils literal">Ordering.LT</tt> (less than) if <tt class="docutils literal">list1</tt> is a sublist of <tt class="docutils literal">list2</tt>, and not equal.</li>
+<li><tt class="docutils literal">Ordering.EQ</tt> (equals) if <tt class="docutils literal">list1 == list2</tt></li>
+<li><tt class="docutils literal">Ordering.GT</tt> (greater than) if <tt class="docutils literal">list2</tt> is a sublist of <tt class="docutils literal">list1</tt>, and not equal.</li>
+<li><tt class="docutils literal">Ordering.NONE</tt> if there is no comparison between <tt class="docutils literal">list1</tt> and <tt class="docutils literal">list2</tt>.</li>
+</ul>
+<div class="section" id="examples">
+<h2>Examples</h2>
+<ul class="simple">
+<li><tt class="docutils literal">[2, 4, 6]</tt> is <tt class="docutils literal">Ordering.LT</tt> <tt class="docutils literal">[0, 2, 4, 6, 8, 10]</tt></li>
+<li><tt class="docutils literal">[]</tt> is <tt class="docutils literal">Ordering.LT</tt> <tt class="docutils literal">[8, 13, 8]</tt></li>
+<li><tt class="docutils literal">['California', 'Oregon', 'Washington', 'Arizona']</tt> is <tt class="docutils literal">Ordering.GT</tt> <tt class="docutils literal">['Oregon', 'Washington']</tt></li>
+<li><tt class="docutils literal">['Oregon', 'Washington']</tt> is <tt class="docutils literal">Ordering.LT</tt> <tt class="docutils literal">['California', 'Oregon', 'Washington', 'Arizona']</tt></li>
+<li><tt class="docutils literal">['Oregon', 'Washington']</tt> is <tt class="docutils literal">Ordering.NONE</tt> <tt class="docutils literal">['Washington', 'Oregon']</tt></li>
+</ul>
+<p>It is a lot like comparison between sets, except that order (and repetitions) matter.</p>
+</div>
+<div class="section" id="python-version">
+<h2>Python Version</h2>
+<p>We know how to check if two lists are equal to each other. What remains is to check if one list is a sublist of the other (we can use this to get both less than and greater than, just by swapping the order of the lists).</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span><span class="w">
+</span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="w">
+
+
+</span><span class="k">class</span> <span class="nc">Ordering</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span><span class="w">
+</span>    <span class="n">LT</span> <span class="o">=</span> <span class="s2">&quot;LT&quot;</span><span class="w">
+</span>    <span class="n">GT</span> <span class="o">=</span> <span class="s2">&quot;GT&quot;</span><span class="w">
+</span>    <span class="n">EQ</span> <span class="o">=</span> <span class="s2">&quot;EQ&quot;</span><span class="w">
+</span>    <span class="n">NONE</span> <span class="o">=</span> <span class="s2">&quot;NONE&quot;</span><span class="w">
+
+
+</span><span class="k">def</span> <span class="nf">list_starts_with</span><span class="p">(</span><span class="n">starting_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">containing_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span><span class="w">
+</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">starting_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">containing_list</span><span class="p">):</span><span class="w">
+</span>        <span class="k">return</span> <span class="kc">False</span><span class="w">
+</span>    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">starting_list</span><span class="p">,</span> <span class="n">containing_list</span><span class="p">):</span><span class="w">
+</span>        <span class="k">if</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">b</span><span class="p">:</span><span class="w">
+</span>            <span class="k">return</span> <span class="kc">False</span><span class="w">
+</span>    <span class="k">return</span> <span class="kc">True</span><span class="w">
+
+
+</span><span class="k">def</span> <span class="nf">is_sublist</span><span class="p">(</span><span class="n">candidate_sublist</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">containing_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span><span class="w">
+    </span><span class="sd">&quot;&quot;&quot;Returns True if x == y[i:j] for some i and j&quot;&quot;&quot;</span><span class="w">
+</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_sublist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">containing_list</span><span class="p">):</span><span class="w">
+</span>        <span class="k">return</span> <span class="kc">False</span><span class="w">
+</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_sublist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span><span class="w">
+</span>        <span class="k">return</span> <span class="kc">True</span><span class="w">
+</span>    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">containing_list</span><span class="p">):</span><span class="w">
+</span>        <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="n">candidate_sublist</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="w">
+</span>            <span class="k">if</span> <span class="n">list_starts_with</span><span class="p">(</span><span class="n">candidate_sublist</span><span class="p">,</span> <span class="n">containing_list</span><span class="p">[</span><span class="n">index</span><span class="p">:]):</span><span class="w">
+</span>                <span class="k">return</span> <span class="kc">True</span><span class="w">
+</span>    <span class="k">return</span> <span class="kc">False</span><span class="w">
+
+
+</span><span class="k">def</span> <span class="nf">compare_lists</span><span class="p">(</span><span class="n">list_one</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">list_two</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Ordering</span><span class="p">:</span><span class="w">
+</span>    <span class="k">if</span> <span class="n">list_one</span> <span class="o">==</span> <span class="n">list_two</span><span class="p">:</span><span class="w">
+</span>        <span class="k">return</span> <span class="n">Ordering</span><span class="o">.</span><span class="n">EQ</span><span class="w">
+</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_one</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_two</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_sublist</span><span class="p">(</span><span class="n">list_one</span><span class="p">,</span> <span class="n">list_two</span><span class="p">):</span><span class="w">
+</span>        <span class="k">return</span> <span class="n">Ordering</span><span class="o">.</span><span class="n">LT</span><span class="w">
+</span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_one</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_two</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_sublist</span><span class="p">(</span><span class="n">list_two</span><span class="p">,</span> <span class="n">list_one</span><span class="p">):</span><span class="w">
+</span>        <span class="k">return</span> <span class="n">Ordering</span><span class="o">.</span><span class="n">GT</span><span class="w">
+</span>    <span class="k">return</span> <span class="n">Ordering</span><span class="o">.</span><span class="n">NONE</span>
+</pre>
+<p>The logic here is pretty straightforward. If we use <tt class="docutils literal">list_starts_with</tt> we can trace through the list, checking each of the locations where candidate list's first element matches a containing list element.</p>
+<p>Technically, this check isn't required -- it would be caught by the element-wise check in <tt class="docutils literal">list_starts_with</tt> -- but it seems wasteful to call this function on every element if it just fails on the first step.</p>
+</div>
+<div class="section" id="haskell-versions">
+<h2>Haskell Versions</h2>
+<p>Here is my first Haskell version of the program, translated pretty directly from the Python version:</p>
+<div class="section" id="direct-translation">
+<h3>Direct translation</h3>
+<pre class="code haskell literal-block">
+<span class="kr">module</span><span class="w"> </span><span class="nn">Sublist</span><span class="w"> </span><span class="p">(</span><span class="nf">sublist</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span><span class="w">
+
+</span><span class="cm">{-
+ - This is the code more or less &quot;translated&quot; from the Python
+ - version
+ -}</span><span class="w">
+
+</span><span class="nf">listStartsWith</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="w">
+</span><span class="nf">listStartsWith</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span><span class="w">
+</span><span class="nf">listStartsWith</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">False</span><span class="w">
+</span><span class="nf">listStartsWith</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">False</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">listStartsWith</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w">
+
+
+</span><span class="nf">isSublist</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="w">
+</span><span class="nf">isSublist</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span><span class="w">
+</span><span class="nf">isSublist</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">False</span><span class="w">
+</span><span class="nf">isSublist</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">listStartsWith</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w">  </span><span class="p">(</span><span class="n">isSublist</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">tail</span><span class="w"> </span><span class="n">y</span><span class="p">))</span><span class="w">
+
+
+</span><span class="nf">sublist</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Ordering</span><span class="w">
+</span><span class="nf">sublist</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">EQ</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">isSublist</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">LT</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">isSublist</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">GT</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+</pre>
+<p>I don't really like that <tt class="docutils literal">listStartsWith</tt> _and_ <tt class="docutils literal">isSublist</tt> both have the &quot;empty list&quot; checks.</p>
+<p>They are needed on <tt class="docutils literal">isSublist</tt> because otherwise we run into an issue with the <tt class="docutils literal">tail y</tt> part in the recursion.
+We keep stripping off the head of the &quot;containing&quot; list, but eventually we reach the tail, and then if we did not guard
+against <tt class="docutils literal">isSublist _ []</tt> in the pattern above, we would have an error.</p>
+<p>The <em>pattern</em> is not strictly necessary, we could have other checks like is one</p>
+<pre class="code haskell literal-block">
+<span class="c1">-- replacing isSublist</span><span class="w">
+</span><span class="nf">isSublist</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="w">
+</span><span class="nf">isSublist</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">listStartsWith</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="p">((</span><span class="n">length</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="p">(</span><span class="n">length</span><span class="w"> </span><span class="n">y</span><span class="p">))</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">isSublist</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">tail</span><span class="w"> </span><span class="n">y</span><span class="p">))</span><span class="w"> </span><span class="p">)</span>
+</pre>
+<p>which reduces the number of line, but it still feels like we are repeating some of the logic.</p>
+</div>
+<div class="section" id="next-version">
+<h3>Next version</h3>
+<p>While I wish I could claim I thought of this, someone else had an amazing solution. In <tt class="docutils literal">Data.List</tt> there is a function <tt class="docutils literal">tails</tt> that
+gives a list containing the subsequent tails of your list.</p>
+<pre class="code haskell literal-block">
+<span class="c1">-- tails is in Data.List, tails:: [a] -&gt; [[a]]</span><span class="w">
+</span><span class="nf">tails</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w">
+</span><span class="c1">-- returns [[1, 2, 3], [2, 3], [3], []]</span>
+</pre>
+<p>We will show how to implement <tt class="docutils literal">tails</tt> ourselves, but if we just imported it, how would we use it?</p>
+<p>All the function <tt class="docutils literal">isSublist</tt> does is see if the list is equal to the first N elements of at least one of the <tt class="docutils literal">tails</tt> of the other list.
+So we can use Haskell's equivalent of Python's <tt class="docutils literal">in</tt>, called <tt class="docutils literal">elem</tt>, to see if we have a match in the list, after cutting to the first N elements.</p>
+<pre class="code haskell literal-block">
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">tails</span><span class="p">)</span><span class="w">
+
+</span><span class="nf">isSublist</span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="w">
+</span><span class="nf">isSublist</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="p">(</span><span class="n">tails</span><span class="w"> </span><span class="n">y</span><span class="p">)</span>
+</pre>
+<p>Now this simplifies the rest of the program, and we don't even need <tt class="docutils literal">listStartsWith</tt> anymore. Our entire program is</p>
+<pre class="code haskell literal-block">
+<span class="kr">module</span><span class="w"> </span><span class="nn">Sublist</span><span class="w"> </span><span class="p">(</span><span class="nf">sublist</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span><span class="w">
+
+</span><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">tails</span><span class="p">)</span><span class="w">
+
+
+</span><span class="nf">isSublist</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="w">
+</span><span class="nf">isSublist</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">t</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="p">(</span><span class="n">length</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">tails</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w">
+
+
+</span><span class="nf">sublist</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Ordering</span><span class="w">
+</span><span class="nf">sublist</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">EQ</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">isSublist</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">LT</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">isSublist</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">GT</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+</pre>
+<p>We could even eliminate <tt class="docutils literal">isSublist</tt> as a function, and replace our code with</p>
+<pre class="code haskell literal-block">
+<span class="kr">module</span><span class="w"> </span><span class="nn">Sublist</span><span class="w"> </span><span class="p">(</span><span class="nf">sublist</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span><span class="w">
+
+</span><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">tails</span><span class="p">)</span><span class="w">
+
+
+</span><span class="nf">sublist</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Ordering</span><span class="w">
+</span><span class="nf">sublist</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">EQ</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">xs</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="p">(</span><span class="n">tails</span><span class="w"> </span><span class="n">ys</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">LT</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">ys</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="p">(</span><span class="n">tails</span><span class="w"> </span><span class="n">xs</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">GT</span><span class="w">
+  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+</pre>
+</div>
+<div class="section" id="did-we-just-cheat-by-importing">
+<h3>Did we just cheat by importing?</h3>
+<p>In any language, we can import a package that has someone else doing the hard work for us. How difficult would it be for us to implement <tt class="docutils literal">tails</tt> on our own?</p>
+<p>Surprisingly easy! Here is an implementation:</p>
+<pre class="code haskell literal-block">
+<span class="nf">ourTails</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w">
+</span><span class="nf">ourTails</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">[]</span><span class="p">]</span><span class="w">
+</span><span class="nf">ourTails</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="p">(</span><span class="n">ourTails</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">tail</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w">  </span><span class="c1">-- or you might perfer ourTails x:xs = x : (ourTails xs)</span>
+</pre>
+</div>
+</div>
+
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="https://getpelican.com/">Pelican</a></li>
+                            <li><a href="https://www.python.org/">Python.org</a></li>
+                            <li><a href="https://palletsprojects.com/p/jinja/">Jinja2</a></li>
+                            <li><a href="#">You can modify those links in your config file</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="https://github.io/kiwidamien/haskell4pythonistas/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+
+                            <li><a href="#">You can add links in your config file</a></li>
+                            <li><a href="#">Another social link</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="https://getpelican.com/">Pelican</a>, which takes great advantage of <a href="https://www.python.org/">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="https://www.smashingmagazine.com/2009/08/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

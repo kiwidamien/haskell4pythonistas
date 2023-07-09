@@ -15,6 +15,7 @@
                 <h1><a href="https://github.io/kiwidamien/haskell4pythonistas/">Haskell 4 Pythonistas</a></h1>
                 <nav><ul>
                     <li class="active"><a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercise.html">Exercise</a></li>
+                    <li><a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercises.html">Exercises</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 <section id="content" class="body">
@@ -64,12 +65,13 @@ sum of multiples = sum({3, 4, 6, 8, 9, 12}) = 42
 
 
 </span><span class="k">def</span> <span class="nf">multiple</span><span class="p">(</span><span class="n">base</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span><span class="w">
-</span>    <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
+</span>    <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span><span class="w">
+</span>        <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
 </span>    <span class="k">if</span> <span class="n">base</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span><span class="w">
 </span>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Should only accept positive values for base&quot;</span><span class="p">)</span><span class="w">
 </span>    <span class="n">accumulator</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
 </span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span><span class="w">
-</span>        <span class="n">candidate</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">accumulator</span><span class="p">)</span><span class="o">*</span><span class="n">base</span><span class="w">
+</span>        <span class="n">candidate</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">accumulator</span><span class="p">)</span> <span class="o">*</span> <span class="n">base</span><span class="w">
 </span>        <span class="k">if</span> <span class="n">candidate</span> <span class="o">&gt;=</span> <span class="n">upper</span><span class="p">:</span><span class="w">
 </span>            <span class="k">return</span> <span class="n">accumulator</span><span class="w">
 </span>        <span class="n">accumulator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span><span class="w">

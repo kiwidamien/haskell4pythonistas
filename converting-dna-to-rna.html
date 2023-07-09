@@ -4,23 +4,29 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="generator" content="Pelican" />
-        <title>Haskell 4 Pythonistas - Damien Martin</title>
+        <title>Converting DNA to RNA</title>
         <link rel="stylesheet" href="https://github.io/kiwidamien/haskell4pythonistas/theme/css/main.css" />
         <link href="https://github.io/kiwidamien/haskell4pythonistas/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Haskell 4 Pythonistas Atom Feed" />
+        <meta name="description" content="Looks at string conversion (similar to ciphers) but on a very limited alphabet (A, C, G, T). Shows how to deal with Either as an error handling technique." />
 </head>
 
 <body id="index" class="home">
         <header id="banner" class="body">
                 <h1><a href="https://github.io/kiwidamien/haskell4pythonistas/">Haskell 4 Pythonistas</a></h1>
                 <nav><ul>
-                    <li><a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercise.html">Exercise</a></li>
+                    <li class="active"><a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercise.html">Exercise</a></li>
                     <li><a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercises.html">Exercises</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="https://github.io/kiwidamien/haskell4pythonistas/converting-dna-to-rna.html" rel="bookmark"
+           title="Permalink to Converting DNA to RNA">Converting DNA to RNA</a></h1>
+    </header>
 
-            <aside id="featured" class="body">
-                <article>
-                    <h1 class="entry-title"><a href="https://github.io/kiwidamien/haskell4pythonistas/converting-dna-to-rna.html">Converting DNA to RNA</a></h1>
+    <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2023-07-08T13:00:00-07:00">
                 Published: Sat 08 July 2023
@@ -31,7 +37,7 @@
         </address>
 <p>In <a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercise.html">Exercise</a>.</p>
 
-</footer><!-- /.post-info --><p>This problem is pretty simple: Given a string representing DNA nucleotides A, C, G, and T convert into the matching RNA. The conversion table is</p>
+</footer><!-- /.post-info -->      <p>This problem is pretty simple: Given a string representing DNA nucleotides A, C, G, and T convert into the matching RNA. The conversion table is</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="48%" />
@@ -396,129 +402,11 @@ This is basically a reduction:</p>
 <li>Moved back to a dictionary with defaults, instead of a 5 line function, for translation.</li>
 </ol>
 </div>
-                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
 
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="https://github.io/kiwidamien/haskell4pythonistas/pascals-triangle-and-recursion.html" rel="bookmark"
-                           title="Permalink to Pascal's triangle and recursion">Pascal's triangle and recursion</a></h1>
-                </header>
+    </div><!-- /.entry-content -->
 
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2023-07-03T00:00:00-07:00">
-                Published: Mon 03 July 2023
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="https://github.io/kiwidamien/haskell4pythonistas/author/damien-martin.html">Damien Martin</a>
-        </address>
-<p>In <a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercises.html">Exercises</a>.</p>
-
-</footer><!-- /.post-info -->                <p class="first last">TBW</p>
-
-                <a class="readmore" href="https://github.io/kiwidamien/haskell4pythonistas/pascals-triangle-and-recursion.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="https://github.io/kiwidamien/haskell4pythonistas/partial-ordering-on-lists.html" rel="bookmark"
-                           title="Permalink to Partial Ordering on Lists">Partial Ordering on Lists</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2023-06-29T17:00:00-07:00">
-                Published: Thu 29 June 2023
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="https://github.io/kiwidamien/haskell4pythonistas/author/damien-martin.html">Damien Martin</a>
-        </address>
-<p>In <a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercise.html">Exercise</a>.</p>
-
-</footer><!-- /.post-info -->                <p class="first last">Implementating a partial ordering on lists.</p>
-
-                <a class="readmore" href="https://github.io/kiwidamien/haskell4pythonistas/partial-ordering-on-lists.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="https://github.io/kiwidamien/haskell4pythonistas/simple-cipher.html" rel="bookmark"
-                           title="Permalink to Simple Cipher">Simple Cipher</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2023-06-28T06:00:00-07:00">
-                Published: Wed 28 June 2023
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="https://github.io/kiwidamien/haskell4pythonistas/author/damien-martin.html">Damien Martin</a>
-        </address>
-<p>In <a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercise.html">Exercise</a>.</p>
-
-</footer><!-- /.post-info -->                <p class="first last">todo</p>
-
-                <a class="readmore" href="https://github.io/kiwidamien/haskell4pythonistas/simple-cipher.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="https://github.io/kiwidamien/haskell4pythonistas/perfect-numbers.html" rel="bookmark"
-                           title="Permalink to Perfect Numbers">Perfect Numbers</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2023-06-28T00:10:00-07:00">
-                Published: Wed 28 June 2023
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="https://github.io/kiwidamien/haskell4pythonistas/author/damien-martin.html">Damien Martin</a>
-        </address>
-<p>In <a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercise.html">Exercise</a>.</p>
-
-</footer><!-- /.post-info -->                <p class="first last">Straight foward Number-Theory problem that shows how to use Haskell sum types.</p>
-
-                <a class="readmore" href="https://github.io/kiwidamien/haskell4pythonistas/perfect-numbers.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="https://github.io/kiwidamien/haskell4pythonistas/sumofmultiples.html" rel="bookmark"
-                           title="Permalink to SumOfMultiples">SumOfMultiples</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2023-06-27T17:00:00-07:00">
-                Published: Tue 27 June 2023
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="https://github.io/kiwidamien/haskell4pythonistas/author/damien-martin.html">Damien Martin</a>
-        </address>
-<p>In <a href="https://github.io/kiwidamien/haskell4pythonistas/category/exercise.html">Exercise</a>.</p>
-
-</footer><!-- /.post-info -->                <p class="first last">Exercise demonstrating the Monad properties of Lists in Haskell via a contrived programming task.</p>
-
-                <a class="readmore" href="https://github.io/kiwidamien/haskell4pythonistas/sumofmultiples.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-                </ol><!-- /#posts-list -->
-                </section><!-- /#content -->
+  </article>
+</section>
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>links</h2>
