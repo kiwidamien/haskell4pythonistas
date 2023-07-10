@@ -7,12 +7,14 @@
         <title>Making Change</title>
         <link rel="stylesheet" href="https://kiwidamien.github.io/hs4py/theme/css/main.css" />
         <link href="https://kiwidamien.github.io/hs4py/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Haskell 4 Pythonistas Atom Feed" />
+        <meta name="description" content="Given an amount of money target, and possible coins coins, how can we make target using the fewest number of coins? Going through a few examples..." />
 </head>
 
 <body id="index" class="home">
         <header id="banner" class="body">
                 <h1><a href="https://kiwidamien.github.io/hs4py/">Haskell 4 Pythonistas</a></h1>
                 <nav><ul>
+                    <li><a href="https://kiwidamien.github.io/hs4py/pages/welcome-to-haskell-for-pythonistas-hs4py.html">Welcome to Haskell for Pythonistas (hs4py)</a></li>
                     <li><a href="https://kiwidamien.github.io/hs4py/category/exercise.html">Exercise</a></li>
                     <li><a href="https://kiwidamien.github.io/hs4py/category/exercises.html">Exercises</a></li>
                 </ul></nav>
@@ -36,7 +38,21 @@
         </address>
 <p>In <a href="https://kiwidamien.github.io/hs4py/category/makechange.html">makeChange</a>.</p>
 
-</footer><!-- /.post-info -->      
+</footer><!-- /.post-info -->      <p>Given an amount of money <tt class="docutils literal">target</tt>, and possible coins <tt class="docutils literal">coins</tt>, how can we make <tt class="docutils literal">target</tt> using the fewest number of coins?</p>
+<p>Going through a few examples</p>
+<pre class="code python literal-block">
+<span class="o">&gt;&gt;&gt;</span> <span class="n">make_change</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">coins</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>  <span class="c1"># the US coin denominations</span><span class="w">
+</span><span class="p">[</span><span class="mi">25</span><span class="p">]</span>  <span class="c1"># can make 25c using just one piece</span><span class="w">
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">make_change</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="mi">55</span><span class="p">,</span> <span class="n">coins</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span><span class="w">
+</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">]</span><span class="w">
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">make_change</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="mi">23</span><span class="p">,</span> <span class="n">coins</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span><span class="w">
+</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">19</span><span class="p">]</span>  <span class="c1"># Note it isn't [1, 1, 1, 20] which requires 4 coins</span><span class="w">
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">make_change</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">coins</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">])</span><span class="w">
+</span><span class="c1"># can return either [1,11] or [2, 10] -- both are valid</span><span class="w">
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">make_change</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">coins</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span><span class="w">
+</span><span class="ne">ValueError</span> <span class="n">of</span> <span class="n">some</span> <span class="n">sort</span> <span class="c1"># Cannot make an odd amount from only even coins!</span>
+</pre>
+
     </div><!-- /.entry-content -->
 
   </article>
