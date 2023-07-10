@@ -1,8 +1,8 @@
 Homepage
 ========
 
-:title: Welcome to Haskell for Pythonistas (hs4py)
+:title: hs4py 
 :save_as: index.html
-
+:category: Home
 
 Tell people why this site exists.
