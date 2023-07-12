@@ -1,14 +1,16 @@
 from __future__ import annotations
+from functools import lru_cache
 
 
-def _make_change(amount: int, allowed: list[int]) -> (list[int], bool):
+@lru_cache()
+def _make_change(amount: int, allowed: tuple[int]) -> (list[int], bool):
     if amount == 0:
         return [], True
 
     if amount in allowed:
         return [amount], True
 
-    smaller_than = [coin for coin in allowed if coin < amount]
+    smaller_than = tuple([coin for coin in allowed if coin < amount])
     if not smaller_than:
         return [], False
     possible_routes = []
@@ -23,7 +25,7 @@ def _make_change(amount: int, allowed: list[int]) -> (list[int], bool):
 
 
 def make_change(amount: int, allowed: list[int]) -> list[int]:
-    change, can_be_done = _make_change(amount, allowed)
+    change, can_be_done = _make_change(amount, tuple(allowed))
     if not can_be_done:
         raise ValueError("Cannot be solved!")
     return sorted(change)
