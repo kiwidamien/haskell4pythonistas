@@ -54,4 +54,13 @@ html_theme = 'sizzle'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+STATIC_PATHS = [
+        'images',
+        'extra'
+    ]
+
+EXTRA_PATH_METADATA = {
+        'extra/favicon.ico': {'path': 'favicon.ico'}
+        }
+
 PYGMENTS_RST_OPTIONS = {'linenos': 'table'}

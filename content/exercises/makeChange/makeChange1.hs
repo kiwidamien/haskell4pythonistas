@@ -7,7 +7,6 @@ smallestMaybeList Nothing Nothing = Nothing
 smallestMaybeList (Just a) (Just b) = if (length a) < (length b) then (Just a) else (Just b)
 
 
-
 makeChange :: Integer -> [Integer] -> Maybe [Integer]
 makeChange 0 _ = Just []
 makeChange _ [] = Nothing

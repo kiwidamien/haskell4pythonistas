@@ -64,6 +64,21 @@ One downside to this approach is that we have no way of early exiting. For examp
    # this code would have one DFS generate [1, 50, 50] early on, but would also construct
    # [1, 1, ...., 1, 1] as a potential solution before discarding it
 
+There are a few ways of addressing this problem. 
+
+- **Use BFS instead of DFS**
+  
+  BFS excels at shortest path problems, as you are expanding each solution one step at a time. As soone as you find a solution, you can stop, as the first solution found will be (one of) the smallest. Generally BFS is a little more complicated to code, and tends to take more memory as you are storing the state of several branches at once.
+
+  DFS is a little easier to write (at least the recursive version), and excels where you are looking for a solution (e.g. maze solvers).
+
+- **Memoize**
+
+  The problem is spending a lot of time calculating steps it has already calculated. In python, we could get significant gains by using an ``@lru_cache``.
+
+- **Additional information**
+
+  We could pass an additional parameter that indicates the current  
 The natural way of solving this problem is with BFS, as you can stop as soon as one path yields a solution. DFS excels when finding *a solution* is enough (e.g. maze exploration) as it is often simpler to code and takes less memory.
 
 We are using DFS here simply because it is easier to write the recursive version.
@@ -81,4 +96,108 @@ Instead, we get the ``_make_change`` helper function to return the list of coins
 Haskell version
 ---------------
 
+Despite knowing how to solve the problem, doing it in Haskell was a struggle for me. Here was my first (non-fruitful) attempt. Let's make the final solution throw a "Nothing" if the problem cannot be solved. Our signature is
 
+.. code:: haskell
+
+   makeChange:: Integer -> [Integer] -> Maybe [Integer]
+   makeChange amount coins = ....
+
+Let's consider this as a recursive function, using the standard tricks. We will pretend that we have a function, ``makeChange``, that can return a smallest list of coins to make ``amount`` if there is one, or ``Nothing`` otherwise, for all amounts less than the current amount.
+
+For the recursive step, if we want to find ``makeChange amount coins`` we have to
+
+1. Calculate ``makeChange (amount - c) coins`` for each ``c`` in coins
+2. Discard the ``Nothing`` values
+3. Choose the shortest remaining list
+
+Step 1 is doable because we assumed that ``makeCoins`` works on any amounts smaller than the current amount. Then we just need the base cases:
+
+.. code:: haskell
+
+   makeChange 0 _ = Just []
+   makeChange _ [] = Nothing
+   makeChange amount coins 
+       | amount < 0 = Nothing
+       | amount `elem` coins = Just [amount]
+
+Okay, so the last part is the recursive step. The first part, trying 1 coin at a time, seems like a natural fit for a list comprehension:
+
+.. code:: haskell
+
+   possiblePathsIncludingNothings = [makeChange (amount-c) coins | c<-coins]
+
+Here ``possiblePathsIncludingNothings`` is of type ``[Maybe [Integer]]``. We need a way of finding the shotest list, discarding the ``Nothings``. This seems like an accumulator:
+
+.. code:: haskell
+
+   shortestListFinderHelper :: Maybe [Integer] -> [Maybe[Integer]] -> Maybe[Integer]
+   shortestListFinderHelper shortest_so_far [] = shortest_so_far
+   shortestListFinderHelper Nothing (try:try_s) = shortestListFinderHelper try try_s
+   shortestListFinderHelper try (Nothing:try_s) = shortestListFinderHelper try try_s
+   shortestListFinderHelper (Just t) ((Just c):try_s) = if (len t) < (len c) then (Just t) else (Just c)
+
+This is really just a reduction in disguise. What we really have is a way of taking two ``Maybe [Integer]`` values and finding the smallest of them, and using this as the reduction step:
+
+.. code:: haskell
+hj
+   smallestMaybeList :: Maybe [Integer] -> Maybe[Integer] -> Maybe[Integer]
+   smallestMaybeList (Just a) Nothing = (Just a)
+   smallestMaybeList Nothing (Just b) = (Just b)
+   smallestMaybeList Nothing Nothing = Nothing
+   smallestMaybeList (Just a) (Just b) = if (len a) < (len b) then a else b
+
+
+Putting it altogether we get the following program
+
+.. include:: makeChange1.hs
+   :code: haskell
+
+Slowness: Memoization
+---------------------
+
+Both the Python and Haskell versions are correct, but they are both painfully slow. The following example takes significant time (a little under a minute on my machine) in both cases:
+
+.. code:: python
+
+   >>> make_change(63, [1, 5, 10, 21, 25])
+   # wait 30 seconds ....
+   [21, 21, 21]
+
+In Python, a simple way to increase the speed is to put a decorator on the function to cache the results!  Let's make this small change, which also requires us to change our coins to tuples.
+
+.. include:: make_change_w_cache.py
+   :code: python
+
+With this small change, solving the same problem as we have above is reduced to 168 :math:`{\mu}` s.
+
+What is the Haskell version of memoization?  `Here is a great video on Haskell memoizatoin <https://www.youtube.com/watch?v=Hyxr7SCXpSQ>`_
+
+
+
+
+
+
+Appendix
+--------
+
+.. include:: leetcode_dfs.py
+   :code: python
+
+.. include:: leetcode_bfs.py
+   :code: python
+
+.. include:: leetcode_dp.py
+   :code: python
+
+From https://leetcode.com/problems/coin-change/solutions/114993/four-kinds-of-solutions-dp-bfs-dfs-improved-dfs/ where the author claims the following times
+
+============= =========
+Solution      Time
+============= =========
+DFS           325 ms
+BFS           796 ms
+DP            1574 ms
+============= =========
+
+for the inputs ``coins = [26, 12, 75, 53, 7, 9, 25, 3, 96, 44, 39, 79, 20, 61, 57, 95, 89, 10, 62, 73, 94, 59, 52, 87, 40, 78, 28, 37], amount = 12312312``
