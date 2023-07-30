@@ -3,7 +3,7 @@ Sum of Multiples: Getting experience with Lists as Monads
 
 :title: SumOfMultiples
 :date: 2023-06-27 17:00
-:category: Exercise
+:category: Exercises
 :status: published
 :summary: Exercise demonstrating the Monad properties of Lists in Haskell via a contrived programming task.
 

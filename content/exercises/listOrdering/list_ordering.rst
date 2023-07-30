@@ -3,7 +3,7 @@ Partial Ordering on Lists
 
 :title: Partial Ordering on Lists 
 :date: 2023-06-29 17:00
-:category: Exercise
+:category: Exercises
 :status: published
 :summary:  Implementating a partial ordering on lists.
 

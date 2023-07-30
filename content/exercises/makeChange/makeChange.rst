@@ -3,6 +3,7 @@ Making Change
 
 :title: Making Change
 :date: 2023-07-12
+:category: Exercises
 :status: draft
 
 Given an amount of money ``target``, and possible coins ``coins``, how can we make ``target`` using the fewest number of coins?
@@ -78,7 +79,6 @@ There are a few ways of addressing this problem.
 
 - **Additional information**
 
-  We could pass an additional parameter that indicates the current  
 The natural way of solving this problem is with BFS, as you can stop as soon as one path yields a solution. DFS excels when finding *a solution* is enough (e.g. maze exploration) as it is often simpler to code and takes less memory.
 
 We are using DFS here simply because it is easier to write the recursive version.

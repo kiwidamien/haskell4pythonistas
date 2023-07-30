@@ -1,7 +1,7 @@
 Minesweeper
 ===========
 
-:title: Making Change
+:title: Minesweeper
 :date: 2023-07-29
 :category: Exercises
 :status: published
