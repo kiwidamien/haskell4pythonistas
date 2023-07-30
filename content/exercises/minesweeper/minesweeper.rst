@@ -3,6 +3,7 @@ Minesweeper
 
 :title: Making Change
 :date: 2023-07-29
+:category: Exercises
 :status: published
 
 Here we are trying to implement one piece of Minesweeper, which is to be able to render the board.
@@ -13,12 +14,13 @@ The actual function we are asked to implement is a function that will render the
 empty cells and mines respectively. The function annotate will produce a list of strings, where the character in row ``r`` and column ``c`` is:
 
 - ``*`` if it is the location of a mine 
-- `` `` (i.e. space) if it is not a mine, nor adjacent to any mine (i.e. our helper function returns 0)
+- :code:` ` (i.e. space) if it is not a mine, nor adjacent to any mine (i.e. our helper function returns 0)
 - A digit ``1`` - ``8`` representing the number of adjacent mines
 
 For example
 
 .. code:: python 
+
    grid = ["      ",
            " *  * ",
            " *    ",
@@ -124,7 +126,7 @@ Second attempt
 
 There are a few things I don't like about this first attempt
 
-- We have a lot of ``Int``s floating around. Sometimes the are positions (rows, columns) and sometimes they are counts. It is hard to tell what argument goes where from the function signature.
+- We have a lot of ``Int`` types floating around. Sometimes the are positions (rows, columns) and sometimes they are counts. It is hard to tell what argument goes where from the function signature.
 - The indexing into the list in ``neighborhood`` feels inelegant
 - The process of getting of zipping two 2-D lists seems really cumbersome.
 
@@ -168,6 +170,7 @@ locations were mines.
 Ultimately, what I want is a data structure like 
 
 .. code:: haskell
+
    -- representing the board
    -- ["  *",
    --  "   "]
@@ -270,3 +273,33 @@ Here is our second attempt at this problem in Haskell.
 .. include:: minesweeper2.hs
    :code: haskell
 
+
+Commentary on Haskell versions
+------------------------------
+
+There were a few generalizable learnings here. 
+The biggest one was on the use of ``zipWith`` and when to use it.
+
+I have used it with 1-D lists before, but my natural inclination when looking at a pair of 2-D lists that I 
+wanted to zip together element-wise and then reduce actual made the problem harder. 
+The simpler version of the problem was to use ``zipWith`` twice.
+It also meant that I could write my functions as functions that took two arguments for the reduction step, instead
+of artificially placing the arguments in a tuple.
+
+If we do want to create an elementwise zip function, here is one way of doing it:
+
+.. code:: haskell
+
+   elementWiseZip :: [[a]] -> [[b]] -> [[(a,b)]]
+   elementWiseZip = zipWith (zipWith (\ one two -> (one, two)))
+
+but often times we can skip creating this function altogether and replace the inner lambda with a reducing function.
+
+The second thing I noticed was that Python's ``IndexError`` catching made dealing with the boundary conditions relatively straightforward.
+The Haskell ``neighborhood`` function has a lot of index checking built in:
+
+.. code:: haskell
+   
+   neighborhood (row, col) grid = [grid !! r !! c | r<-[(row-1)..(row+1)], c<-[(col-1)..(col+1)], (r,c)/=(row,col), r>=0, r<(length grid), c>=0, c<length(grid!!0)]
+
+We could separate this out into its own function, but it is something that was significantly easier in Python.

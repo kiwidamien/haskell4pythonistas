@@ -3,7 +3,7 @@ DNA to RNA
 
 :title: Converting DNA to RNA
 :date: 2023-07-08 13:00
-:category: Exercise
+:category: Exercises
 :summary: Looks at string conversion (similar to ciphers) but on a very limited alphabet (A, C, G, T). Shows how to deal with ``Either`` as an error handling technique.
 
 This problem is pretty simple: Given a string representing DNA nucleotides A, C, G, and T convert into the matching RNA. The conversion table is
