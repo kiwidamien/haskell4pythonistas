@@ -1,8 +1,8 @@
 class Solution:
-    def coinChange(self, coins, amount):    
+    def coinChange(self, coins, amount):
         # BFS, graph search. Keep records of visited nodes
         visited = [True] + [False] * amount
-        
+
         par = [0]  # parents
         child = []  # children
         step = 0
@@ -17,5 +17,5 @@ class Solution:
                         visited[tmp] = True
                         child.append(tmp)
             par, child = child, []
-        
+
         return -1 if amount else 0
