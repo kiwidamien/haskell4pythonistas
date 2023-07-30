@@ -16,8 +16,7 @@
                 <nav><ul>
                     <li><a href="https://kiwidamien.github.io/hs4py/pages/hs4py.html">hs4py</a></li>
                     <li><a href="https://kiwidamien.github.io/hs4py/category/exercise.html">Exercise</a></li>
-                    <li><a href="https://kiwidamien.github.io/hs4py/category/exercises.html">Exercises</a></li>
-                    <li class="active"><a href="https://kiwidamien.github.io/hs4py/category/minesweeper.html">minesweeper</a></li>
+                    <li class="active"><a href="https://kiwidamien.github.io/hs4py/category/exercises.html">Exercises</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 <section id="content" class="body">
@@ -37,7 +36,7 @@
         <address class="vcard author">
                 By                         <a class="url fn" href="https://kiwidamien.github.io/hs4py/author/damien-martin.html">Damien Martin</a>
         </address>
-<p>In <a href="https://kiwidamien.github.io/hs4py/category/minesweeper.html">minesweeper</a>.</p>
+<p>In <a href="https://kiwidamien.github.io/hs4py/category/exercises.html">Exercises</a>.</p>
 
 </footer><!-- /.post-info -->      <p>Here we are trying to implement one piece of Minesweeper, which is to be able to render the board.
 The biggest part that we need to implement is determining the number of mines adjacent to each cell (including diagonals).
@@ -46,7 +45,7 @@ This number is between 0 and 8 (because we don't check the cell itself, just its
 empty cells and mines respectively. The function annotate will produce a list of strings, where the character in row <tt class="docutils literal">r</tt> and column <tt class="docutils literal">c</tt> is:</p>
 <ul class="simple">
 <li><tt class="docutils literal">*</tt> if it is the location of a mine</li>
-<li>`` `` (i.e. space) if it is not a mine, nor adjacent to any mine (i.e. our helper function returns 0)</li>
+<li>:code:` ` (i.e. space) if it is not a mine, nor adjacent to any mine (i.e. our helper function returns 0)</li>
 <li>A digit <tt class="docutils literal">1</tt> - <tt class="docutils literal">8</tt> representing the number of adjacent mines</li>
 </ul>
 <p>For example</p>
@@ -327,6 +326,28 @@ but we can reduce this to</p>
 </span><span class="nf">annotate</span><span class="w"> </span><span class="n">grid</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">numsToString</span><span class="w"> </span><span class="p">(</span><span class="n">scoreGrid</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span><span class="w"> </span><span class="n">grid</span>
 </pre>
 </div>
+</div>
+<div class="section" id="commentary-on-haskell-versions">
+<h3>Commentary on Haskell versions</h3>
+<p>There were a few generalizable learnings here.
+The biggest one was on the use of <tt class="docutils literal">zipWith</tt> and when to use it.</p>
+<p>I have used it with 1-D lists before, but my natural inclination when looking at a pair of 2-D lists that I
+wanted to zip together element-wise and then reduce actual made the problem harder.
+The simpler version of the problem was to use <tt class="docutils literal">zipWith</tt> twice.
+It also meant that I could write my functions as functions that took two arguments for the reduction step, instead
+of artificially placing the arguments in a tuple.</p>
+<p>If we do want to create an elementwise zip function, here is one way of doing it:</p>
+<pre class="code haskell literal-block">
+<span class="nf">elementWiseZip</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">b</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)]]</span><span class="w">
+</span><span class="nf">elementWiseZip</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">zipWith</span><span class="w"> </span><span class="p">(</span><span class="n">zipWith</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">two</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">one</span><span class="p">,</span><span class="w"> </span><span class="n">two</span><span class="p">)))</span>
+</pre>
+<p>but often times we can skip creating this function altogether and replace the inner lambda with a reducing function.</p>
+<p>The second thing I noticed was that Python's <tt class="docutils literal">IndexError</tt> catching made dealing with the boundary conditions relatively straightforward.
+The Haskell <tt class="docutils literal">neighborhood</tt> function has a lot of index checking built in:</p>
+<pre class="code haskell literal-block">
+<span class="nf">neighborhood</span><span class="w"> </span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">)</span><span class="w"> </span><span class="n">grid</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">grid</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">r</span><span class="ow">&lt;-</span><span class="p">[(</span><span class="n">row</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">..</span><span class="p">(</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">)],</span><span class="w"> </span><span class="n">c</span><span class="ow">&lt;-</span><span class="p">[(</span><span class="n">col</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">..</span><span class="p">(</span><span class="n">col</span><span class="o">+</span><span class="mi">1</span><span class="p">)],</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">c</span><span class="p">)</span><span class="o">/=</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">),</span><span class="w"> </span><span class="n">r</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="o">&lt;</span><span class="p">(</span><span class="n">length</span><span class="w"> </span><span class="n">grid</span><span class="p">),</span><span class="w"> </span><span class="n">c</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="o">&lt;</span><span class="n">length</span><span class="p">(</span><span class="n">grid</span><span class="o">!!</span><span class="mi">0</span><span class="p">)]</span>
+</pre>
+<p>We could separate this out into its own function, but it is something that was significantly easier in Python.</p>
 </div>
 </div>
 
