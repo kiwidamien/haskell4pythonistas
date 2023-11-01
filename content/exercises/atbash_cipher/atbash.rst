@@ -3,7 +3,7 @@ atBash Cipher
 
 :title: Simple Cipher
 :date: 2023-06-28 06:00
-:category: Exercise 
+:category: Exercises
 :status: published
 :summary: todo 
 
